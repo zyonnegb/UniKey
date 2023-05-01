@@ -62,16 +62,16 @@
 
     <!-- Sign Up FORM -->
     
-<form action="/remove" method="POST">
+<form action="/remove" method="post">
     <label for="heightArea" class="form-label fs-3 mt-3">Select Key</label>
     <select class="form-select form-select-lg mb-3 fs-3" aria-label=".form-select-lg example">
       <% for(var i=0; i<keys.length; i++) {%>
-          <option class=""><%= keys[i].key %></option>
+        <option class="" value="<%= keys[i].key %>" name="key" ><%= keys[i].key %></option>
       <% } %>
-     </select>
-
-    <button type="button" class="btn btn-outline-danger w-100 fs-2 mt-3">Delete Key</button>
+    </select>
+    <button type="submit" class="btn btn-outline-danger w-100 fs-2 mt-3">Delete Key</button>
 </form>
+
 
     
     <!-- <form action="/" method="post">
@@ -89,5 +89,8 @@
     </form> -->
 </div>
 </div>
+<script src="main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js" integrity="sha384-zYPOMqeu1DAVkHiLqWBUTcbYfZ8osu1Nd6Z89ify25QV9guujx43ITvfi12/QExE" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js" integrity="sha384-Y4oOpwW3duJdCWv5ly8SCFYWqFDsfob/3GkgExXKV4idmbt98QcxXYs9UoXAB7BZ" crossorigin="anonymous"></script>
 </body>
 </html>

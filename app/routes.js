@@ -11,9 +11,9 @@ module.exports = function(app, passport, db) {
           res.render('create.ejs');
       });
           //route to render the delete page
-      app.get('/delete', function(req, res) {
-        res.render('delete.ejs');
-      });
+      // app.get('/delete', function(req, res) { //removed becuase it was messing with the other get for delete
+      //   res.render('delete.ejs');
+      // });
           //route to render the browse page
       app.get('/browse', function(req, res) {
       res.render('browse.ejs');
@@ -21,22 +21,25 @@ module.exports = function(app, passport, db) {
   
       // PROFILE SECTION ========================= //displays content in dom BROWSE PAGE
       app.get('/profile', isLoggedIn, function(req, res) {
-          db.collection('messages').find().toArray((err, result) => {
+          db.collection('keys').find().toArray((err, result) => {
             if (err) return console.log(err)
             res.render('profile.ejs', {
               user : req.user,
-              messages: result
+              keys: result
             })
           })
       });
-      //displays key in delete dropdown
-      app.get('/delete', (req, res) => {
+      //displays key in delete dropdown to be deleted
+      app.get('/delete', isLoggedIn, function(req, res) {
         db.collection('keys').find().toArray((err, result) => {
           if (err) return console.log(err)
-          res.render('delete.ejs', { keys: result })
+          console.log('hi')
+          res.render('delete.ejs', {
+            user : req.user,
+            keys: result
+          })
         })
-      })
-      
+      });
       
   
       // LOGOUT ==============================
@@ -50,7 +53,7 @@ module.exports = function(app, passport, db) {
   // message board routes ===============================================================
   
       app.post('/messages', (req, res) => {
-        db.collection('messages').save({name: req.body.name, msg: req.body.msg, thumbUp: 0}, (err, result) => {
+        db.collection('keys').save({name: req.body.name, msg: req.body.msg, thumbUp: 0}, (err, result) => {
           if (err) return console.log(err)
           console.log('saved to database')
           res.redirect('/profile')
@@ -70,7 +73,7 @@ module.exports = function(app, passport, db) {
       })
   
       app.put('/messages', (req, res) => {
-        db.collection('messages')
+        db.collection('keys')
         .findOneAndUpdate({name: req.body.name, msg: req.body.msg}, {
           $set: {
             thumbUp:req.body.thumbUp + 1
@@ -84,7 +87,7 @@ module.exports = function(app, passport, db) {
         })
       })
       app.put('/messages/thumbDown', (req, res) => {
-        db.collection('messages')
+        db.collection('keys')
         .findOneAndUpdate({name: req.body.name, msg: req.body.msg}, {
           $set: {
             thumbUp:req.body.thumbDown - 1
@@ -98,10 +101,11 @@ module.exports = function(app, passport, db) {
         })
       })
   
-      app.delete('/messages', (req, res) => {
-        db.collection('messages').findOneAndDelete({name: req.body.name, msg: req.body.msg}, (err, result) => {
+      app.post('/remove', (req, res) => {
+        console.log(req.body)
+        db.collection('keys').findOneAndDelete({keys: req.body.key}, (err, result) => {
           if (err) return res.send(500, err)
-          res.send('Message deleted!')
+          res.redirect('/delete')
         })
       })
   
@@ -118,7 +122,7 @@ module.exports = function(app, passport, db) {
   
           // process the login form
           app.post('/login', passport.authenticate('local-login', {
-              successRedirect : '/profile', // redirect to the secure profile section
+              successRedirect : '/browse', // redirect to the secure profile section
               failureRedirect : '/login', // redirect back to the signup page if there is an error
               failureFlash : true // allow flash messages
           }));
@@ -131,7 +135,7 @@ module.exports = function(app, passport, db) {
   
           // process the signup form
           app.post('/signup', passport.authenticate('local-signup', {
-              successRedirect : '/profile', // redirect to the secure profile section
+              successRedirect : '/create', // redirect to the secure profile section
               failureRedirect : '/signup', // redirect back to the signup page if there is an error
               failureFlash : true // allow flash messages
           }));
@@ -149,7 +153,7 @@ module.exports = function(app, passport, db) {
           user.local.email    = undefined;
           user.local.password = undefined;
           user.save(function(err) {
-              res.redirect('/profile');
+              res.redirect('/create');
           });
       });
   
